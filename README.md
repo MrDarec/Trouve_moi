@@ -32,7 +32,7 @@
 
 ```
 trouve-moi/
-├── backend/          # API Node.js + Express + MongoDB + Socket.io
+├── backend/          # API PHP Laravel + MySQL
 ├── frontend/         # Application React (Vite + Tailwind)
 ├── admin/            # Interface d'administration React
 └── docker-compose.yml
@@ -40,11 +40,11 @@ trouve-moi/
 
 | Composant     | Technologie                      |
 |---------------|----------------------------------|
-| Backend API   | Node.js 20 + Express.js          |
-| Base de données | MongoDB 7 + Mongoose            |
-| Temps réel    | Socket.io                        |
+| Backend API   | PHP 8 + Laravel 10               |
+| Base de données | MySQL + Eloquent ORM            |
+| Temps réel    | ⏳ Laravel Broadcasting (à configurer) |
 | Auth          | JWT (access + refresh tokens)    |
-| Upload photos | Multer (local) → AWS S3 (prod)   |
+| Upload photos | Laravel Storage (local) → AWS S3 (prod) |
 | Carte         | Leaflet + OpenStreetMap          |
 | Frontend      | React 18 + Vite + Tailwind CSS   |
 | Admin         | React 18 + Recharts              |
@@ -73,11 +73,12 @@ trouve-moi/
 - ✅ Algorithme multi-critères :
   - Catégorie (30%)
   - Mots-clés Jaccard (35%)
-  - Distance géographique (25%)
+  - Distance géographique via formule Haversine (25%)
   - Proximité de date (10%)
 - ✅ Score minimum 30% requis
 - ✅ Rayon maximum 100 km
-- ✅ Notification instantanée au match
+- ✅ Notification in-app créée lors d'un match
+- ⏳ Notification instantanée temps réel (Laravel Broadcasting non configuré)
 
 ### Messagerie
 - ✅ Chat temps réel via Socket.io
@@ -352,7 +353,7 @@ Le matching compare les signalements opposés (perdu vs trouvé) selon 4 critèr
 
 **Score minimum requis : 30%**
 
-Les candidats sont pré-filtrés via l'index géospatial MongoDB `$near` pour optimiser les performances.
+Les candidats sont filtrés côté PHP après chargement (MySQL ne dispose pas d'index géospatial natif — une optimisation via PostGIS ou filtrage par bounding box est prévue).
 
 ---
 
