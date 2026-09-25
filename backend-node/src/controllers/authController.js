@@ -77,13 +77,13 @@ exports.register = async (req, res, next) => {
 // @route   POST /api/auth/verify-otp
 exports.verifyOTP = async (req, res, next) => {
   try {
-    const { userId, otp } = req.body;
+    const { userId, email, otp } = req.body;
 
-    if (!userId || !otp) {
-      return res.status(400).json({ success: false, message: 'UserId et OTP requis.' });
+    if ((!userId && !email) || !otp) {
+      return res.status(400).json({ success: false, message: 'Email (ou UserId) et OTP requis.' });
     }
 
-    const user = await User.findById(userId);
+    const user = userId ? await User.findById(userId) : await User.findOne({ email });
     if (!user) {
       return res.status(404).json({ success: false, message: 'Utilisateur non trouvé.' });
     }
@@ -111,8 +111,11 @@ exports.verifyOTP = async (req, res, next) => {
 // @route   POST /api/auth/resend-otp
 exports.resendOTP = async (req, res, next) => {
   try {
-    const { userId } = req.body;
-    const user = await User.findById(userId);
+    const { userId, email } = req.body;
+    if (!userId && !email) {
+      return res.status(400).json({ success: false, message: 'Email ou UserId requis.' });
+    }
+    const user = userId ? await User.findById(userId) : await User.findOne({ email });
     if (!user) return res.status(404).json({ success: false, message: 'Utilisateur non trouvé.' });
 
     const otp = generateOTP();

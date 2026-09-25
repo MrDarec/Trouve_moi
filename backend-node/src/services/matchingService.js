@@ -148,14 +148,14 @@ const findMatches = async (newItem, io = null) => {
           {
             userId: lostItem.userId,
             type: 'new_match',
-            title: '🎯 Nouveau match trouvé !',
+            title: 'Nouveau match trouvé',
             message: `Un objet trouvé correspond à votre signalement avec un score de ${score.total}%.`,
             data: { matchId: match._id, score: score.total }
           },
           {
             userId: foundItem.userId,
             type: 'new_match',
-            title: '🎯 Nouveau match trouvé !',
+            title: 'Nouveau match trouvé',
             message: `Un objet perdu correspond à votre signalement avec un score de ${score.total}%.`,
             data: { matchId: match._id, score: score.total }
           }

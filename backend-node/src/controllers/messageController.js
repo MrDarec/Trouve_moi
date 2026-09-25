@@ -81,8 +81,8 @@ exports.sendMessage = async (req, res, next) => {
     await Notification.create({
       userId: receiverId,
       type: 'new_message',
-      title: '💬 Nouveau message',
-      message: `${req.user.name}: ${content || '📷 Photo'}`,
+      title: 'Nouveau message',
+      message: `${req.user.name}: ${content || '[Photo]'}`,
       data: { matchId: req.params.matchId, messageId: message._id }
     });
 

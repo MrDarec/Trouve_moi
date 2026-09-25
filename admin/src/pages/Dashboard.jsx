@@ -20,7 +20,7 @@ const StatCard = ({ icon: Icon, label, value, color, trend }) => (
   </div>
 );
 
-const COLORS = ['#FF6B35', '#10B981', '#3B82F6', '#8B5CF6', '#F59E0B', '#EC4899'];
+const COLORS = ['#0284C7', '#0EA5E9', '#10B981', '#64748B', '#F59E0B', '#3B82F6'];
 
 const Dashboard = () => {
   const [stats, setStats] = useState(null);
@@ -51,9 +51,9 @@ const Dashboard = () => {
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <StatCard icon={Package} label="Signalements total" value={overview.totalItems} color="bg-primary" />
-        <StatCard icon={Users} label="Utilisateurs" value={overview.totalUsers} color="bg-blue-500" />
-        <StatCard icon={Handshake} label="Matches" value={overview.totalMatches} color="bg-purple-500" />
-        <StatCard icon={CheckCircle} label="Restitutions" value={overview.totalRestitutions} color="bg-green-500" />
+        <StatCard icon={Users} label="Utilisateurs" value={overview.totalUsers} color="bg-slate-700" />
+        <StatCard icon={Handshake} label="Matches" value={overview.totalMatches} color="bg-sky-600" />
+        <StatCard icon={CheckCircle} label="Restitutions" value={overview.totalRestitutions} color="bg-emerald-600" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">

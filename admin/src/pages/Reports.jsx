@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
+import { CheckCircle, XCircle, AlertTriangle, User, Package, MessageSquare, Clock } from 'lucide-react';
 import api from '../services/api';
 import toast from 'react-hot-toast';
 
@@ -33,9 +33,9 @@ const Reports = () => {
   };
 
   const typeLabels = {
-    user: '👤 Utilisateur',
-    item: '📦 Objet',
-    message: '💬 Message',
+    user: { label: 'Utilisateur', Icon: User },
+    item: { label: 'Objet', Icon: Package },
+    message: { label: 'Message', Icon: MessageSquare },
   };
 
   return (
@@ -46,9 +46,14 @@ const Reports = () => {
       </div>
 
       <div className="flex gap-2 mb-6">
-        {[{ v: 'pending', l: '⏳ En attente' }, { v: 'resolved', l: '✅ Résolus' }, { v: 'dismissed', l: '❌ Rejetés' }].map(f => (
+        {[
+          { v: 'pending', l: 'En attente', Icon: Clock },
+          { v: 'resolved', l: 'Résolus', Icon: CheckCircle },
+          { v: 'dismissed', l: 'Rejetés', Icon: XCircle },
+        ].map(f => (
           <button key={f.v} onClick={() => setFilter(f.v)}
-            className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${filter === f.v ? 'bg-primary text-white' : 'bg-white border border-gray-200 text-gray-600 hover:border-primary'}`}>
+            className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition-all ${filter === f.v ? 'bg-primary text-white' : 'bg-white border border-gray-200 text-gray-600 hover:border-primary'}`}>
+            <f.Icon className="w-3.5 h-3.5" />
             {f.l}
           </button>
         ))}
@@ -71,7 +76,9 @@ const Reports = () => {
 
               <div className="flex-1 min-w-0">
                 <div className="flex flex-wrap items-center gap-2 mb-1">
-                  <span className="badge badge-blue">{typeLabels[report.targetType] || report.targetType}</span>
+                  <span className="badge badge-blue inline-flex items-center gap-1">
+                    {(() => { const t = typeLabels[report.targetType]; return t ? <><t.Icon className="w-3 h-3" />{t.label}</> : report.targetType; })()}
+                  </span>
                   <span className="badge badge-amber">{report.reason}</span>
                   <span className={`badge ${report.status === 'pending' ? 'badge-amber' : report.status === 'resolved' ? 'badge-green' : 'badge-gray'}`}>
                     {report.status}

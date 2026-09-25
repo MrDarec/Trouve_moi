@@ -101,6 +101,7 @@ export default function MapView({
       const badgeColor = isLost ? '#b45309' : '#047857';
       const badgeBorder = isLost ? 'rgba(217, 119, 6, 0.25)' : 'rgba(5, 150, 105, 0.25)';
 
+      const marker = L.marker([lat, lng], { icon: createIcon(item.type) });
       marker.bindPopup(`
         <div style="min-width:180px;font-family:Inter,system-ui,sans-serif;padding:3px;">
           <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
@@ -111,7 +112,7 @@ export default function MapView({
           </div>
           <div style="font-weight:600;font-size:13px;color:#0f172a;margin-bottom:4px;line-height:1.35;">${item.title}</div>
           <div style="font-size:11px;color:#64748b;margin-bottom:8px;">${item.city ?? ''}</div>
-          <a href="/items/${item._id}" style="font-size:11px;color:#0284c7;font-weight:600;text-decoration:none;">Voir le détail &rarr;</a>
+          <a href="/items/${item._id ?? item.id}" style="font-size:11px;color:#0284c7;font-weight:600;text-decoration:none;">Voir le détail &rarr;</a>
         </div>
       `);
       marker.addTo(markerLayerRef.current);

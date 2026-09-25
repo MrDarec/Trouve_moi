@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ScanSearch } from 'lucide-react';
 import api from '../services/api';
 import toast from 'react-hot-toast';
 
@@ -31,7 +32,9 @@ const Login = () => {
     <div className="min-h-screen bg-sidebar flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <div className="text-6xl mb-4">🔍</div>
+          <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-slate-800 border border-slate-700 flex items-center justify-center">
+            <ScanSearch className="w-8 h-8 text-sky-400" />
+          </div>
           <h1 className="text-2xl font-extrabold text-white">Trouve Moi</h1>
           <p className="text-slate-400 mt-1 text-sm">Panneau d'administration</p>
         </div>
@@ -51,7 +54,7 @@ const Login = () => {
                 className="w-full bg-slate-700 border border-slate-600 text-white placeholder-slate-500 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary" />
             </div>
             <button type="submit" disabled={loading}
-              className="w-full bg-primary text-white py-3 rounded-xl font-semibold hover:bg-orange-600 transition-colors disabled:opacity-50 mt-2">
+              className="w-full bg-primary text-white py-3 rounded-xl font-semibold hover:bg-primary-dark transition-colors disabled:opacity-50 mt-2">
               {loading ? 'Connexion...' : 'Se connecter'}
             </button>
           </form>

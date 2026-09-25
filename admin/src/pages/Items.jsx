@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, CheckCircle, XCircle, Trash2, Eye, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, CheckCircle, XCircle, Trash2, Eye, ChevronLeft, ChevronRight, Clock, SearchX, Package } from 'lucide-react';
 import api from '../services/api';
 import toast from 'react-hot-toast';
 
@@ -80,9 +80,15 @@ const AdminItems = () => {
             className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-primary" />
         </div>
         <div className="flex gap-2 flex-wrap">
-          {[{ v: 'pending', l: '⏳ En attente' }, { v: 'approved', l: '✅ Approuvés' }, { v: 'rejected', l: '❌ Rejetés' }, { v: 'all', l: 'Tous' }].map(f => (
+          {[
+            { v: 'pending', l: 'En attente', Icon: Clock },
+            { v: 'approved', l: 'Approuvés', Icon: CheckCircle },
+            { v: 'rejected', l: 'Rejetés', Icon: XCircle },
+            { v: 'all', l: 'Tous', Icon: null },
+          ].map(f => (
             <button key={f.v} onClick={() => { setFilter(f.v); setPage(1); }}
-              className={`px-3 py-2 rounded-xl text-sm font-medium transition-all ${filter === f.v ? 'bg-primary text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
+              className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-all ${filter === f.v ? 'bg-primary text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
+              {f.Icon && <f.Icon className="w-3.5 h-3.5" />}
               {f.l}
             </button>
           ))}
@@ -119,8 +125,8 @@ const AdminItems = () => {
                           {item.photos?.[0] ? (
                             <img src={getImageUrl(item.photos[0])} alt="" className="w-full h-full object-cover" />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center text-xl">
-                              {item.type === 'lost' ? '🔍' : '📦'}
+                            <div className="w-full h-full flex items-center justify-center text-slate-400">
+                              {item.type === 'lost' ? <SearchX className="w-5 h-5" /> : <Package className="w-5 h-5" />}
                             </div>
                           )}
                         </div>
@@ -131,8 +137,8 @@ const AdminItems = () => {
                       </div>
                     </td>
                     <td className="px-4 py-4">
-                      <span className={item.type === 'lost' ? 'badge badge-red' : 'badge badge-green'}>
-                        {item.type === 'lost' ? '❌ Perdu' : '✅ Trouvé'}
+                      <span className={`inline-flex items-center gap-1 ${item.type === 'lost' ? 'badge badge-red' : 'badge badge-green'}`}>
+                        {item.type === 'lost' ? <><XCircle className="w-3 h-3" /> Perdu</> : <><CheckCircle className="w-3 h-3" /> Trouvé</>}
                       </span>
                     </td>
                     <td className="px-4 py-4 text-gray-700 text-xs">{item.userId?.name || 'N/A'}</td>

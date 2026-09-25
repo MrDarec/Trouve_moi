@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Shield, Ban, CheckCircle, ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
+import { Search, Shield, Ban, CheckCircle, ChevronLeft, ChevronRight, Crown, Award, ShieldCheck, User, Clock } from 'lucide-react';
 import api from '../services/api';
 import toast from 'react-hot-toast';
 
@@ -121,8 +121,8 @@ const Users = () => {
                     </div>
                   </td>
                   <td className="px-4 py-4">
-                    <span className={`badge ${badgeColors[user.badge] || 'badge-gray'}`}>
-                      {user.badge === 'gold' ? '🥇 Gold' : user.badge === 'silver' ? '🥈 Silver' : user.badge === 'verified' ? '✅ Vérifié' : '👤 Basique'}
+                    <span className={`badge ${badgeColors[user.badge] || 'badge-gray'} inline-flex items-center gap-1`}>
+                      {user.badge === 'gold' ? <><Crown className="w-3 h-3" /> Gold</> : user.badge === 'silver' ? <><Award className="w-3 h-3" /> Silver</> : user.badge === 'verified' ? <><ShieldCheck className="w-3 h-3" /> Vérifié</> : <><User className="w-3 h-3" /> Basique</>}
                     </span>
                   </td>
                   <td className="px-4 py-4">
@@ -136,8 +136,8 @@ const Users = () => {
                   </td>
                   <td className="px-4 py-4 font-semibold text-gray-700">{user.successfulRestitutions || 0}</td>
                   <td className="px-4 py-4">
-                    <span className={`badge ${user.isSuspended ? 'badge-red' : user.isVerified ? 'badge-green' : 'badge-gray'}`}>
-                      {user.isSuspended ? '🚫 Suspendu' : user.isVerified ? '✅ Vérifié' : '⏳ Non vérifié'}
+                    <span className={`badge ${user.isSuspended ? 'badge-red' : user.isVerified ? 'badge-green' : 'badge-gray'} inline-flex items-center gap-1`}>
+                      {user.isSuspended ? <><Ban className="w-3 h-3" /> Suspendu</> : user.isVerified ? <><CheckCircle className="w-3 h-3" /> Vérifié</> : <><Clock className="w-3 h-3" /> Non vérifié</>}
                     </span>
                   </td>
                   <td className="px-4 py-4 text-gray-500 text-xs">

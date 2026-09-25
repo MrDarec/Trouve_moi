@@ -43,7 +43,7 @@ exports.createItem = async (req, res, next) => {
     // Lancer le matching en arrière-plan
     const io = req.app.get('io');
     findMatches(item, io).then(matches => {
-      console.log(`✅ ${matches.length} match(es) trouvé(s) pour l'item ${item._id}`);
+      console.log(`[matching] ${matches.length} match(es) found for item ${item._id}`);
     });
 
     const populated = await Item.findById(item._id).populate('userId', 'name avatar city reliabilityScore');

@@ -96,7 +96,7 @@ exports.acceptMatch = async (req, res, next) => {
       await Notification.create({
         userId: otherUser._id,
         type: 'match_accepted',
-        title: '✅ Match accepté !',
+        title: 'Match accepté',
         message: 'Les deux parties ont accepté le match. Vous pouvez maintenant discuter !',
         data: { matchId: match._id }
       });
@@ -109,7 +109,7 @@ exports.acceptMatch = async (req, res, next) => {
       await Notification.create({
         userId: otherUserId,
         type: 'new_match',
-        title: '👍 Match en attente',
+        title: 'Match en attente de confirmation',
         message: "L'autre partie a accepté ce match. Votre confirmation est attendue.",
         data: { matchId: match._id }
       });
@@ -184,14 +184,14 @@ exports.confirmRestitution = async (req, res, next) => {
         {
           userId: match.userLost,
           type: 'restitution_confirmed',
-          title: '🎉 Restitution confirmée !',
+          title: 'Restitution confirmée',
           message: 'La restitution a été confirmée par les deux parties. Bravo !',
           data: { matchId: match._id }
         },
         {
           userId: match.userFound,
           type: 'restitution_confirmed',
-          title: '🎉 Restitution confirmée !',
+          title: 'Restitution confirmée',
           message: 'La restitution a été confirmée par les deux parties. Merci !',
           data: { matchId: match._id }
         }

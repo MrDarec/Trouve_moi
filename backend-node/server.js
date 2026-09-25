@@ -74,7 +74,7 @@ app.use('/api/admin', adminRouter);
 
 // Health check
 app.get('/api/health', (req, res) => {
-  res.json({ success: true, message: 'Trouve Moi API is running 🚀', timestamp: new Date().toISOString() });
+  res.json({ success: true, message: 'Trouve Moi API is running', timestamp: new Date().toISOString() });
 });
 
 // Swagger (optionnel en dev)
@@ -106,12 +106,12 @@ app.use(errorHandler);
 const connectedUsers = new Map();
 
 io.on('connection', (socket) => {
-  console.log(`🔌 Socket connecté: ${socket.id}`);
+  console.log(`[socket] connected: ${socket.id}`);
 
   socket.on('join_user', (userId) => {
     socket.join(`user_${userId}`);
     connectedUsers.set(userId, socket.id);
-    console.log(`👤 User ${userId} rejoint`);
+    console.log(`[socket] user ${userId} joined`);
   });
 
   socket.on('join_match', (matchId) => {
@@ -134,7 +134,7 @@ io.on('connection', (socket) => {
     connectedUsers.forEach((sid, userId) => {
       if (sid === socket.id) connectedUsers.delete(userId);
     });
-    console.log(`🔌 Socket déconnecté: ${socket.id}`);
+    console.log(`[socket] disconnected: ${socket.id}`);
   });
 });
 
@@ -160,14 +160,14 @@ cron.schedule('0 2 * * *', async () => {
       await Notification.create({
         userId: item.userId,
         type: 'item_archived',
-        title: '📦 Signalement archivé',
+        title: 'Signalement archivé',
         message: `Votre signalement "${item.title}" a été archivé après 30 jours.`,
         data: { itemId: item._id }
       });
     }
 
     if (itemsToArchive.length > 0) {
-      console.log(`📦 ${itemsToArchive.length} signalement(s) archivé(s)`);
+      console.log(`[cron] ${itemsToArchive.length} signalement(s) archivé(s)`);
     }
   } catch (error) {
     console.error('Erreur cron archivage:', error);
@@ -193,7 +193,7 @@ cron.schedule('0 9 * * *', async () => {
       await Notification.create({
         userId: item.userId,
         type: 'reminder',
-        title: '⏰ Rappel - Votre signalement',
+        title: 'Rappel - Votre signalement',
         message: `Votre signalement "${item.title}" est actif depuis 7 jours. Pensez à le mettre à jour si l'objet a été retrouvé.`,
         data: { itemId: item._id }
       });
@@ -220,19 +220,17 @@ const startServer = async () => {
         isVerified: true,
         isIdentityVerified: true
       });
-      console.log(`✅ Admin créé: ${process.env.ADMIN_EMAIL}`);
+      console.log(`[init] Admin créé: ${process.env.ADMIN_EMAIL}`);
     }
   } catch (e) { console.log('Admin déjà existant ou erreur:', e.message); }
 
   const PORT = process.env.PORT || 5000;
   server.listen(PORT, () => {
-    console.log(`
-🚀 Trouve Moi API démarré !
-📍 Port: ${PORT}
-🌍 Env: ${process.env.NODE_ENV}
-📚 Docs: http://localhost:${PORT}/api-docs
-❤️  Health: http://localhost:${PORT}/api/health
-    `);
+    console.log(`\n[server] Trouve Moi API started`);
+    console.log(`[server] Port: ${PORT}`);
+    console.log(`[server] Env:  ${process.env.NODE_ENV}`);
+    console.log(`[server] Docs: http://localhost:${PORT}/api-docs`);
+    console.log(`[server] Health: http://localhost:${PORT}/api/health`);
   });
 };
 

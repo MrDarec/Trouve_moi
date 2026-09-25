@@ -4,8 +4,16 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: { DEFAULT: '#FF6B35', dark: '#e55a24', 50: '#fff5f0' },
-        sidebar: '#1e293b',
+        primary: {
+          DEFAULT: '#4F6AF5',
+          dark:    '#3B54E0',
+          light:   '#7B93FA',
+          50:      '#EFF1FE',
+        },
+        sidebar: '#0D1117',
+      },
+      fontFamily: {
+        sans: ['Inter', 'system-ui', 'sans-serif'],
       },
     },
   },
