@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { getCategoryLabel } from '../../utils/constants';
-import { useNavigate } from 'react-router-dom';
+import { detectUserLocation } from '../../services/geoService';
 
 // Fix default Leaflet icons
 delete L.Icon.Default.prototype._getIconUrl;
@@ -31,24 +31,30 @@ const createIcon = (type) => {
 
 export default function MapView({
   items = [],
-  center = [14.6928, -17.4467], // Dakar by default
-  zoom = 12,
+  center = null,
+  zoom = 13,
   height = '400px',
   onLocationSelect,
   selectedLocation = null,
   interactive = true,
+  autoLocate = true,
 }) {
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const markerLayerRef = useRef(null);
   const selectedMarkerRef = useRef(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
-    if (mapInstanceRef.current) return;
+    if (!mapRef.current || mapInstanceRef.current) return;
+
+    // Détermination de la position de départ
+    const initialCenter = selectedLocation
+      ? [selectedLocation.lat, selectedLocation.lng]
+      : center || [6.3653, 2.4183]; // Cotonou par défaut au lieu de Dakar
+
     const map = L.map(mapRef.current, {
-      center,
-      zoom,
+      center: initialCenter,
+      zoom: selectedLocation ? Math.max(zoom, 15) : zoom,
       zoomControl: true,
       scrollWheelZoom: interactive,
       dragging: interactive,
@@ -61,6 +67,20 @@ export default function MapView({
 
     mapInstanceRef.current = map;
 
+    // Réajustement des tuiles pour éviter les zones grises
+    setTimeout(() => {
+      map.invalidateSize();
+    }, 200);
+
+    // Détection automatique de la position de l'utilisateur si aucun repère n'est sélectionné
+    if (autoLocate && !selectedLocation && !center) {
+      detectUserLocation().then((loc) => {
+        if (loc && mapInstanceRef.current && !selectedMarkerRef.current) {
+          mapInstanceRef.current.flyTo([loc.lat, loc.lng], 14, { duration: 1 });
+        }
+      });
+    }
+
     if (onLocationSelect) {
       map.on('click', (e) => {
         const { lat, lng } = e.latlng;
@@ -68,7 +88,9 @@ export default function MapView({
         if (selectedMarkerRef.current) {
           selectedMarkerRef.current.setLatLng([lat, lng]);
         } else {
-          selectedMarkerRef.current = L.marker([lat, lng]).addTo(map);
+          selectedMarkerRef.current = L.marker([lat, lng], {
+            icon: createIcon('lost'),
+          }).addTo(map);
         }
       });
     }
@@ -90,10 +112,15 @@ export default function MapView({
       markerLayerRef.current = L.layerGroup().addTo(map);
     }
 
+    const bounds = [];
+
     items.forEach((item) => {
-      const coords = item.location?.coordinates;
+      const coords = item.location?.coordinates || (item.latitude && item.longitude ? [item.longitude, item.latitude] : null);
       if (!coords || coords.length < 2) return;
       const [lng, lat] = coords;
+      if (!lat || !lng) return;
+
+      bounds.push([lat, lng]);
 
       const catLabel = getCategoryLabel(item.category);
       const isLost = item.type === 'lost';
@@ -117,19 +144,38 @@ export default function MapView({
       `);
       marker.addTo(markerLayerRef.current);
     });
+
+    // Si on a des items et pas de sélection spécifique, ajuster la vue
+    if (bounds.length > 1 && !selectedLocation) {
+      map.fitBounds(bounds, { padding: [40, 40], maxZoom: 14 });
+    }
   }, [items]);
 
-  // Update selected location marker
+  // Update selected location marker & fly to it
   useEffect(() => {
     const map = mapInstanceRef.current;
-    if (!map || !selectedLocation) return;
+    if (!map) return;
+
+    if (!selectedLocation) {
+      if (selectedMarkerRef.current) {
+        map.removeLayer(selectedMarkerRef.current);
+        selectedMarkerRef.current = null;
+      }
+      return;
+    }
+
     const { lat, lng } = selectedLocation;
+    if (!lat || !lng) return;
+
     if (selectedMarkerRef.current) {
       selectedMarkerRef.current.setLatLng([lat, lng]);
     } else {
-      selectedMarkerRef.current = L.marker([lat, lng]).addTo(map);
+      selectedMarkerRef.current = L.marker([lat, lng], {
+        icon: createIcon('lost'),
+      }).addTo(map);
     }
-    map.setView([lat, lng], Math.max(map.getZoom(), 14));
+
+    map.flyTo([lat, lng], Math.max(map.getZoom(), 15), { duration: 0.8 });
   }, [selectedLocation]);
 
   return (

@@ -1,9 +1,10 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Upload, X, MapPin, Loader2, Check, Search, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Upload, X, MapPin, Loader2, Check, Search, CheckCircle2, Crosshair } from 'lucide-react';
 import MapView from '../components/Map/MapView';
 import api from '../services/api';
 import { CATEGORIES } from '../utils/constants';
+import { detectUserLocation, reverseGeocode, searchPlaces } from '../services/geoService';
 import toast from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -14,6 +15,10 @@ export default function ReportItem() {
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [geoLoading, setGeoLoading] = useState(false);
+  const [addressLoading, setAddressLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [searching, setSearching] = useState(false);
 
   const [form, setForm] = useState({
     type: 'lost',
@@ -32,27 +37,92 @@ export default function ReportItem() {
 
   const setField = (key, val) => setForm((f) => ({ ...f, [key]: val }));
 
+  // Détecter automatiquement la position dès l'arrivée à l'étape 2 si aucune coordonnée n'est encore saisie
+  useEffect(() => {
+    if (step === 1 && !form.lat) {
+      setGeoLoading(true);
+      detectUserLocation().then(async (loc) => {
+        if (loc) {
+          setForm((f) => ({
+            ...f,
+            lat: loc.lat,
+            lng: loc.lng,
+            city: f.city || (loc.city ? `${loc.city}${loc.country ? ', ' + loc.country : ''}` : ''),
+          }));
+          if (!form.city) {
+            const rev = await reverseGeocode(loc.lat, loc.lng);
+            if (rev?.city) {
+              setForm((f) => ({ ...f, city: rev.city }));
+            }
+          }
+        }
+      }).finally(() => setGeoLoading(false));
+    }
+  }, [step]);
+
   // --- Step 1 validation ---
   const step1Valid = form.type && form.category && form.title.trim().length >= 5;
 
-  // --- Step 2: Geolocation ---
+  // --- Step 2: Geolocation & Reverse Geocoding ---
   const handleGps = () => {
     if (!navigator.geolocation) { toast.error('Géolocalisation non supportée'); return; }
     setGeoLoading(true);
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setField('lat', pos.coords.latitude);
-        setField('lng', pos.coords.longitude);
+      async (pos) => {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        setField('lat', lat);
+        setField('lng', lng);
         setGeoLoading(false);
-        toast.success('Position détectée !');
+        toast.success('Position GPS détectée !');
+        setAddressLoading(true);
+        const rev = await reverseGeocode(lat, lng);
+        if (rev?.city) {
+          setField('city', rev.city);
+        }
+        setAddressLoading(false);
       },
-      () => { toast.error('Impossible de détecter votre position'); setGeoLoading(false); }
+      () => {
+        toast.error('Impossible de récupérer le GPS précis.');
+        setGeoLoading(false);
+      },
+      { enableHighAccuracy: true, timeout: 5000 }
     );
   };
 
-  const handleMapClick = useCallback(({ lat, lng }) => {
+  const handleMapClick = useCallback(async ({ lat, lng }) => {
     setForm((f) => ({ ...f, lat, lng }));
+    setAddressLoading(true);
+    const rev = await reverseGeocode(lat, lng);
+    if (rev?.city) {
+      setForm((f) => ({ ...f, city: rev.city }));
+    }
+    setAddressLoading(false);
   }, []);
+
+  const handleSearchPlaces = async (val) => {
+    setSearchQuery(val);
+    if (val.trim().length < 2) {
+      setSearchResults([]);
+      return;
+    }
+    setSearching(true);
+    const results = await searchPlaces(val);
+    setSearchResults(results);
+    setSearching(false);
+  };
+
+  const handleSelectPlace = (place) => {
+    setForm((f) => ({
+      ...f,
+      lat: place.lat,
+      lng: place.lng,
+      city: place.city || place.label.split(',')[0],
+    }));
+    setSearchQuery('');
+    setSearchResults([]);
+    toast.success(`Position définie : ${place.city}`);
+  };
 
   // --- Step 3: Photos ---
   const handlePhotos = (e) => {
@@ -215,37 +285,102 @@ export default function ReportItem() {
           <motion.div key="step2" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}
             className="glass-card p-6 space-y-4">
             <div className="flex items-center justify-between">
-              <p className="text-sm text-slate-400">Cliquez sur la carte pour situer l'objet</p>
-              <button onClick={handleGps} disabled={geoLoading}
-                className="btn-secondary text-sm py-2 px-3">
-                {geoLoading ? <Loader2 size={14} className="animate-spin" /> : <MapPin size={14} />}
-                Ma position
+              <div>
+                <p className="text-sm font-medium text-slate-200">Localisez l&apos;endroit</p>
+                <p className="text-xs text-slate-400">Cliquez sur la carte ou recherchez un quartier</p>
+              </div>
+              <button
+                type="button"
+                onClick={handleGps}
+                disabled={geoLoading}
+                className="btn-secondary text-xs sm:text-sm py-2 px-3 shrink-0"
+              >
+                {geoLoading ? <Loader2 size={14} className="animate-spin text-primary-400" /> : <Crosshair size={14} className="text-primary-400" />}
+                <span>Ma position exacte</span>
               </button>
+            </div>
+
+            {/* Barre de recherche d'adresse / quartier */}
+            <div className="relative">
+              <div className="relative">
+                <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
+                <input
+                  type="text"
+                  placeholder="Rechercher un quartier, une ville ou un lieu..."
+                  value={searchQuery}
+                  onChange={(e) => handleSearchPlaces(e.target.value)}
+                  className="input-field pl-10 text-xs sm:text-sm py-2.5"
+                />
+                {searching && (
+                  <Loader2 size={14} className="absolute right-3.5 top-1/2 -translate-y-1/2 animate-spin text-primary-400" />
+                )}
+              </div>
+              {searchResults.length > 0 && (
+                <div className="absolute top-full left-0 right-0 mt-1.5 bg-[#0C121D] border border-slate-700/80 rounded-xl shadow-2xl z-50 overflow-hidden divide-y divide-slate-800/80 max-h-56 overflow-y-auto">
+                  {searchResults.map((p) => (
+                    <button
+                      key={p.id}
+                      type="button"
+                      onClick={() => handleSelectPlace(p)}
+                      className="w-full text-left px-3.5 py-2.5 hover:bg-slate-800/80 transition-colors flex items-start gap-2.5"
+                    >
+                      <MapPin size={14} className="text-primary-400 shrink-0 mt-0.5" />
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs font-semibold text-slate-200 truncate">{p.city}</p>
+                        <p className="text-[11px] text-slate-400 truncate">{p.label}</p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             <MapView
               height="350px"
               onLocationSelect={handleMapClick}
-              selectedLocation={form.lat ? { lat: form.lat, lng: form.lng } : null}
+              selectedLocation={form.lat && form.lng ? { lat: form.lat, lng: form.lng } : null}
             />
 
-            {form.lat && (
-              <p className="text-xs text-emerald-400 flex items-center gap-1">
-                <Check size={12} /> Position sélectionnée : {form.lat.toFixed(5)}, {form.lng.toFixed(5)}
+            {form.lat ? (
+              <div className="flex items-center justify-between text-xs px-1">
+                <p className="text-emerald-400 flex items-center gap-1.5 font-medium">
+                  <Check size={13} />
+                  <span>Position définie : {form.lat.toFixed(4)}, {form.lng.toFixed(4)}</span>
+                </p>
+                {addressLoading && (
+                  <p className="text-slate-400 flex items-center gap-1 text-[11px]">
+                    <Loader2 size={11} className="animate-spin text-primary-400" />
+                    <span>Détection de l&apos;adresse…</span>
+                  </p>
+                )}
+              </div>
+            ) : (
+              <p className="text-xs text-amber-400/90 flex items-center gap-1">
+                <MapPin size={12} />
+                <span>Veuillez cliquer sur la carte pour déposer un repère précis</span>
               </p>
             )}
 
             <div>
-              <label className="input-label">Ville / Quartier</label>
-              <input id="report-city" type="text" className="input-field" placeholder="Ex: Dakar, Médina…"
-                value={form.city} onChange={(e) => setField('city', e.target.value)} />
+              <label className="input-label flex items-center justify-between">
+                <span>Ville / Quartier</span>
+                {addressLoading && <span className="text-xs text-primary-400 animate-pulse font-normal">Mise à jour automatique…</span>}
+              </label>
+              <input
+                id="report-city"
+                type="text"
+                className="input-field"
+                placeholder="Ex: Cotonou, Akpakpa, Cadjehoun…"
+                value={form.city}
+                onChange={(e) => setField('city', e.target.value)}
+              />
             </div>
 
             <div className="flex gap-3">
-              <button onClick={() => setStep(0)} className="btn-secondary flex-1 justify-center">
+              <button type="button" onClick={() => setStep(0)} className="btn-secondary flex-1 justify-center">
                 <ArrowLeft size={16} /> Précédent
               </button>
-              <button onClick={() => setStep(2)} disabled={!form.lat}
+              <button type="button" onClick={() => setStep(2)} disabled={!form.lat}
                 className="btn-primary flex-1 justify-center">
                 Suivant <ArrowRight size={16} />
               </button>
