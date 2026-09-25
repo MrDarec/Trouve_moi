@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Search, SlidersHorizontal, X, MapPin } from 'lucide-react';
+import { Search, SlidersHorizontal, X, MapPin, SearchX } from 'lucide-react';
 import ItemCard from '../components/Items/ItemCard';
 import api from '../services/api';
 import { CATEGORIES } from '../utils/constants';
@@ -87,8 +87,8 @@ export default function Items() {
               <select id="filter-type" className="input-field py-2.5 text-sm"
                 value={filters.type} onChange={(e) => setFilters({ ...filters, type: e.target.value })}>
                 <option value="">Tous les types</option>
-                <option value="lost">🔴 Perdu</option>
-                <option value="found">🟢 Trouvé</option>
+                <option value="lost">Perdu</option>
+                <option value="found">Trouvé</option>
               </select>
 
               {/* Category */}
@@ -96,7 +96,7 @@ export default function Items() {
                 value={filters.category} onChange={(e) => setFilters({ ...filters, category: e.target.value })}>
                 <option value="">Toutes les catégories</option>
                 {CATEGORIES.map((c) => (
-                  <option key={c.value} value={c.value}>{c.icon} {c.label}</option>
+                  <option key={c.value} value={c.value}>{c.label}</option>
                 ))}
               </select>
 
@@ -134,8 +134,10 @@ export default function Items() {
         </div>
       ) : (
         <div className="text-center py-20 text-slate-500">
-          <div className="text-5xl mb-4">🔍</div>
-          <p className="font-medium">Aucun résultat trouvé</p>
+          <div className="w-14 h-14 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center mx-auto mb-3 text-slate-500">
+            <SearchX size={26} />
+          </div>
+          <p className="font-medium text-slate-400">Aucun résultat trouvé</p>
           {hasFilters && (
             <button onClick={clearFilters} className="mt-3 text-sm text-primary-400 hover:text-primary-300 transition-colors">
               Effacer les filtres

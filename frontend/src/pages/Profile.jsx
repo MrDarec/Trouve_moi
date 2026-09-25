@@ -64,7 +64,7 @@ export default function Profile() {
               {user.avatar ? (
                 <img src={`/${user.avatar}`} alt="" className="w-24 h-24 rounded-full object-cover border-4 border-slate-700" />
               ) : (
-                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary-500 to-violet-600 flex items-center justify-center text-3xl font-bold text-white border-4 border-slate-700">
+                <div className="w-24 h-24 rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-3xl font-bold text-slate-200 border-4 border-slate-700">
                   {user.name?.[0]?.toUpperCase()}
                 </div>
               )}

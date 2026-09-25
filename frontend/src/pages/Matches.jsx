@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Check, X, CheckCircle, Clock, MessageSquare, Loader2 } from 'lucide-react';
+import { Check, X, CheckCircle, Clock, MessageSquare, Loader2, Target, Search, CheckCircle2 } from 'lucide-react';
 import api from '../services/api';
 import { getCategoryIcon, getCategoryLabel, formatDate } from '../utils/constants';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 
 const STATUS_LABEL = {
-  pending: { label: 'En attente', color: 'text-yellow-400', bg: 'bg-yellow-500/10', border: 'border-yellow-500/20', Icon: Clock },
-  accepted: { label: 'Accepté', color: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20', Icon: CheckCircle },
-  rejected: { label: 'Refusé', color: 'text-red-400', bg: 'bg-red-500/10', border: 'border-red-500/20', Icon: X },
-  confirmed: { label: 'Confirmé ✅', color: 'text-primary-400', bg: 'bg-primary-500/10', border: 'border-primary-500/20', Icon: Check },
+  pending: { label: 'En attente', color: 'text-amber-300', bg: 'bg-amber-500/10', border: 'border-amber-500/20', Icon: Clock },
+  accepted: { label: 'Accepté', color: 'text-emerald-300', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20', Icon: CheckCircle },
+  rejected: { label: 'Refusé', color: 'text-rose-300', bg: 'bg-rose-500/10', border: 'border-rose-500/20', Icon: X },
+  confirmed: { label: 'Confirmé', color: 'text-primary-300', bg: 'bg-primary-500/10', border: 'border-primary-500/20', Icon: CheckCircle2 },
 };
 
 export default function Matches() {
@@ -52,9 +52,11 @@ export default function Matches() {
 
       {matches.length === 0 ? (
         <div className="text-center py-20 text-slate-500">
-          <div className="text-6xl mb-4">🎯</div>
-          <p className="font-semibold text-slate-300 mb-2">Pas encore de correspondance</p>
-          <p className="text-sm">Signalez un objet pour que notre algorithme cherche des correspondances !</p>
+          <div className="w-16 h-16 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center mx-auto mb-4 text-slate-500">
+            <Target size={30} />
+          </div>
+          <p className="font-semibold text-slate-200 mb-2">Pas encore de correspondance</p>
+          <p className="text-sm text-slate-400">Signalez un objet pour que notre algorithme cherche des correspondances !</p>
           <Link to="/report" className="btn-primary inline-flex mt-4">Signaler un objet</Link>
         </div>
       ) : (
@@ -76,11 +78,23 @@ export default function Matches() {
                 <div className="flex flex-col sm:flex-row sm:items-start gap-4">
                   {/* Items */}
                   <div className="flex-1 grid grid-cols-2 gap-3">
-                    {[{ item: lostItem, label: '🔴 Perdu' }, { item: foundItem, label: '🟢 Trouvé' }].map(({ item, label }) => (
-                      <Link key={item?._id} to={`/items/${item?._id}`} className="bg-slate-800/60 rounded-xl p-3 hover:bg-slate-800 transition-colors block">
-                        <div className="text-2xl mb-1">{getCategoryIcon(item?.category)}</div>
-                        <div className="text-xs text-slate-500 mb-1">{label}</div>
-                        <div className="text-sm font-semibold text-slate-200 line-clamp-2">{item?.title}</div>
+                    {[
+                      { item: lostItem, label: 'Perdu', isLost: true },
+                      { item: foundItem, label: 'Trouvé', isLost: false },
+                    ].map(({ item, label, isLost }) => (
+                      <Link key={item?._id} to={`/items/${item?._id}`} className="bg-slate-850/80 border border-slate-800 rounded-xl p-3.5 hover:border-slate-700 transition-colors block group">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-md inline-flex items-center gap-1 ${
+                            isLost ? 'bg-amber-500/10 text-amber-300 border border-amber-500/20' : 'bg-emerald-500/10 text-emerald-300 border border-emerald-500/20'
+                          }`}>
+                            {isLost ? <Search size={10} /> : <CheckCircle2 size={10} />}
+                            {label}
+                          </span>
+                          <span className="text-slate-400">
+                            {getCategoryIcon(item?.category, { size: 14 })}
+                          </span>
+                        </div>
+                        <div className="text-sm font-semibold text-slate-200 line-clamp-1 group-hover:text-primary-300 transition-colors">{item?.title}</div>
                         <div className="text-xs text-slate-500 mt-1">{item?.city ?? ''}</div>
                       </Link>
                     ))}
@@ -93,7 +107,7 @@ export default function Matches() {
                       <svg className="w-16 h-16 -rotate-90" viewBox="0 0 64 64">
                         <circle cx="32" cy="32" r="26" fill="none" stroke="rgb(30 41 59)" strokeWidth="6" />
                         <circle cx="32" cy="32" r="26" fill="none"
-                          stroke={match.score >= 70 ? '#10b981' : match.score >= 50 ? '#f59e0b' : '#8b5cf6'}
+                          stroke={match.score >= 70 ? '#10b981' : match.score >= 50 ? '#f59e0b' : '#0284c7'}
                           strokeWidth="6"
                           strokeDasharray={`${(match.score / 100) * 163.4} 163.4`}
                           strokeLinecap="round" />

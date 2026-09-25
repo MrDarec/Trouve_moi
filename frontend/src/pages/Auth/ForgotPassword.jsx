@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Mail, Loader2, ArrowLeft } from 'lucide-react';
+import { Mail, Loader2, ArrowLeft, KeyRound } from 'lucide-react';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
 import { motion } from 'framer-motion';
@@ -36,7 +36,9 @@ export default function ForgotPassword() {
         </Link>
 
         <div className="text-center mb-8">
-          <div className="text-4xl mb-3">🔐</div>
+          <div className="w-12 h-12 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center mx-auto mb-4 text-primary-400">
+            <KeyRound size={22} />
+          </div>
           <h1 className="text-2xl font-bold text-slate-100">Mot de passe oublié</h1>
           {!sent ? (
             <p className="text-slate-500 text-sm mt-2">Entrez votre email pour recevoir un lien de réinitialisation.</p>

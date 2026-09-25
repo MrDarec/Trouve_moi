@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { MapPin, Calendar, Star, ArrowLeft, Share2, Flag, CheckCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { MapPin, Calendar, Star, ArrowLeft, Share2, Flag, CheckCircle, ChevronLeft, ChevronRight, Search, CheckCircle2, SearchX } from 'lucide-react';
 import MapView from '../components/Map/MapView';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -43,8 +43,10 @@ export default function ItemDetail() {
   if (!item) {
     return (
       <div className="text-center py-20 text-slate-500">
-        <div className="text-5xl mb-4">🔍</div>
-        <p>Signalement introuvable</p>
+        <div className="w-14 h-14 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center mx-auto mb-4 text-slate-500">
+          <SearchX size={26} />
+        </div>
+        <p className="font-medium text-slate-400">Signalement introuvable</p>
         <Link to="/items" className="btn-primary mt-4 inline-flex">Retour aux objets</Link>
       </div>
     );
@@ -97,8 +99,11 @@ export default function ItemDetail() {
               )}
             </div>
           ) : (
-            <div className="rounded-2xl bg-slate-900 border border-slate-800 aspect-video flex items-center justify-center text-7xl">
-              {getCategoryIcon(item.category)}
+            <div className="rounded-2xl bg-slate-900/60 border border-slate-800 aspect-video flex flex-col items-center justify-center text-slate-500">
+              <div className="w-16 h-16 rounded-2xl bg-slate-800/90 border border-slate-700/60 flex items-center justify-center text-slate-400 mb-2">
+                {getCategoryIcon(item.category, { size: 30 })}
+              </div>
+              <span className="text-xs text-slate-400 font-medium">{getCategoryLabel(item.category)}</span>
             </div>
           )}
 
@@ -124,10 +129,21 @@ export default function ItemDetail() {
           {/* Type + Category */}
           <div className="flex items-center gap-3 flex-wrap">
             <span className={item.type === 'lost' ? 'badge-lost' : 'badge-found'}>
-              {item.type === 'lost' ? '🔴 Perdu' : '🟢 Trouvé'}
+              {item.type === 'lost' ? (
+                <>
+                  <Search size={12} className="shrink-0" />
+                  <span>Perdu</span>
+                </>
+              ) : (
+                <>
+                  <CheckCircle2 size={12} className="shrink-0" />
+                  <span>Trouvé</span>
+                </>
+              )}
             </span>
-            <span className="text-xs bg-slate-800 text-slate-400 px-2 py-1 rounded-lg font-medium">
-              {getCategoryIcon(item.category)} {getCategoryLabel(item.category)}
+            <span className="text-xs bg-slate-800/90 border border-slate-700/60 text-slate-300 px-2.5 py-1 rounded-lg font-medium inline-flex items-center gap-1.5">
+              {getCategoryIcon(item.category, { size: 13 })}
+              <span>{getCategoryLabel(item.category)}</span>
             </span>
           </div>
 

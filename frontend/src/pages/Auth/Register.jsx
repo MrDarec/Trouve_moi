@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { User, Mail, Lock, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { User, Mail, Lock, Eye, EyeOff, Loader2, UserPlus } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
 import { motion } from 'framer-motion';
@@ -43,7 +43,9 @@ export default function Register() {
         className="glass-card w-full max-w-md p-8"
       >
         <div className="text-center mb-8">
-          <div className="text-4xl mb-3">🔍</div>
+          <div className="w-12 h-12 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center mx-auto mb-4 text-primary-400">
+            <UserPlus size={22} />
+          </div>
           <h1 className="text-2xl font-bold text-slate-100">Créer un compte</h1>
           <p className="text-slate-500 text-sm mt-1">Rejoignez la communauté Trouve Moi</p>
         </div>

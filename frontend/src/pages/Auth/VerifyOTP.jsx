@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Loader2, RefreshCw } from 'lucide-react';
+import { Loader2, RefreshCw, MailCheck } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
@@ -53,7 +53,7 @@ export default function VerifyOTP() {
     setLoading(true);
     try {
       await verifyOtp(email, code);
-      toast.success('Email vérifié ! Bienvenue 🎉');
+      toast.success('Email vérifié ! Bienvenue.');
       navigate('/');
     } catch (err) {
       toast.error(err.response?.data?.message ?? 'Code invalide ou expiré');
@@ -84,7 +84,9 @@ export default function VerifyOTP() {
         animate={{ opacity: 1, y: 0 }}
         className="glass-card w-full max-w-md p-8 text-center"
       >
-        <div className="text-5xl mb-4">📬</div>
+        <div className="w-14 h-14 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center mx-auto mb-4 text-primary-400">
+          <MailCheck size={26} />
+        </div>
         <h1 className="text-2xl font-bold text-slate-100 mb-2">Vérifier votre email</h1>
         <p className="text-slate-400 text-sm mb-2">
           Un code à 6 chiffres a été envoyé à

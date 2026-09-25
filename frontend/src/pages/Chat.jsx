@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Send, Image, ArrowLeft, Loader2 } from 'lucide-react';
+import { Send, Image, ArrowLeft, Loader2, MessageSquare, Sparkles } from 'lucide-react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
@@ -132,10 +132,12 @@ export default function Chat() {
         <div className="flex-1 overflow-y-auto scrollbar-thin">
           {matches.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center px-4 py-10 text-slate-500">
-              <div className="text-4xl mb-3">💬</div>
-              <p className="text-sm">Aucune conversation active</p>
-              <p className="text-xs mt-1">Acceptez un match pour démarrer</p>
-              <Link to="/matches" className="btn-primary text-sm mt-4 py-2">Voir mes matches</Link>
+              <div className="w-12 h-12 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center mx-auto mb-3 text-slate-500">
+                <MessageSquare size={22} />
+              </div>
+              <p className="text-sm font-medium text-slate-400">Aucune conversation active</p>
+              <p className="text-xs text-slate-500 mt-1">Acceptez un match pour démarrer</p>
+              <Link to="/matches" className="btn-primary text-xs mt-4 py-2 px-3.5">Voir mes matches</Link>
             </div>
           ) : (
             matches.map((match) => {
@@ -146,7 +148,7 @@ export default function Chat() {
                     activeMatch?._id === match._id ? 'bg-slate-800 border-r-2 border-primary-500' : ''
                   }`}
                 >
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-500 to-violet-600 flex items-center justify-center text-sm font-bold text-white shrink-0">
+                  <div className="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-sm font-bold text-slate-200 shrink-0">
                     {other?.name?.[0]?.toUpperCase() ?? '?'}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -171,7 +173,7 @@ export default function Chat() {
             <button onClick={() => setActiveMatch(null)} className="md:hidden text-slate-500 hover:text-slate-300">
               <ArrowLeft size={20} />
             </button>
-            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary-500 to-violet-600 flex items-center justify-center text-sm font-bold text-white">
+            <div className="w-9 h-9 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-sm font-bold text-slate-200">
               {getOtherUser(activeMatch)?.name?.[0]?.toUpperCase() ?? '?'}
             </div>
             <div>
@@ -185,9 +187,11 @@ export default function Chat() {
             {loading ? (
               <div className="flex justify-center py-10"><Loader2 size={24} className="animate-spin text-primary-500" /></div>
             ) : messages.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-full text-slate-500 text-center">
-                <div className="text-4xl mb-3">👋</div>
-                <p className="text-sm">Dites bonjour !</p>
+              <div className="flex flex-col items-center justify-center h-full text-slate-500 text-center py-8">
+                <div className="w-12 h-12 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center mx-auto mb-2 text-slate-400">
+                  <Sparkles size={20} />
+                </div>
+                <p className="text-xs text-slate-400 font-medium">Envoyez un message pour démarrer l'échange !</p>
               </div>
             ) : (
               messages.map((msg) => {
@@ -247,8 +251,10 @@ export default function Chat() {
         </div>
       ) : (
         <div className="hidden md:flex flex-1 items-center justify-center text-slate-500 flex-col gap-3">
-          <div className="text-5xl">💬</div>
-          <p>Sélectionnez une conversation</p>
+          <div className="w-16 h-16 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-500">
+            <MessageSquare size={28} />
+          </div>
+          <p className="text-sm text-slate-400">Sélectionnez une conversation</p>
         </div>
       )}
     </div>

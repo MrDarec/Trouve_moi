@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { getCategoryIcon } from '../../utils/constants';
+import { getCategoryLabel } from '../../utils/constants';
 import { useNavigate } from 'react-router-dom';
 
 // Fix default Leaflet icons
@@ -13,7 +13,7 @@ L.Icon.Default.mergeOptions({
 });
 
 const createIcon = (type) => {
-  const color = type === 'lost' ? '#f97316' : '#10b981';
+  const color = type === 'lost' ? '#d97706' : '#059669';
   const svg = `
     <svg xmlns="http://www.w3.org/2000/svg" width="30" height="42" viewBox="0 0 30 42">
       <path d="M15 0C6.72 0 0 6.72 0 15c0 11.25 15 27 15 27s15-15.75 15-27C30 6.72 23.28 0 15 0z" fill="${color}" opacity="0.95"/>
@@ -95,18 +95,23 @@ export default function MapView({
       if (!coords || coords.length < 2) return;
       const [lng, lat] = coords;
 
-      const icon = createIcon(item.type);
-      const marker = L.marker([lat, lng], { icon });
-      const emoji = getCategoryIcon(item.category);
+      const catLabel = getCategoryLabel(item.category);
+      const isLost = item.type === 'lost';
+      const badgeBg = isLost ? 'rgba(217, 119, 6, 0.12)' : 'rgba(5, 150, 105, 0.12)';
+      const badgeColor = isLost ? '#b45309' : '#047857';
+      const badgeBorder = isLost ? 'rgba(217, 119, 6, 0.25)' : 'rgba(5, 150, 105, 0.25)';
 
       marker.bindPopup(`
-        <div style="min-width:180px;font-family:Inter,sans-serif;">
-          <div style="font-weight:600;font-size:13px;margin-bottom:4px;">${emoji} ${item.title}</div>
-          <div style="font-size:11px;color:${item.type === 'lost' ? '#f97316' : '#10b981'};font-weight:500;margin-bottom:6px;">
-            ${item.type === 'lost' ? '🔴 Perdu' : '🟢 Trouvé'}
+        <div style="min-width:180px;font-family:Inter,system-ui,sans-serif;padding:3px;">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+            <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px;background:${badgeBg};color:${badgeColor};border:1px solid ${badgeBorder};text-transform:uppercase;letter-spacing:0.04em;">
+              ${isLost ? 'Perdu' : 'Trouvé'}
+            </span>
+            <span style="font-size:11px;color:#64748b;font-weight:500;">${catLabel}</span>
           </div>
-          <div style="font-size:11px;color:#94a3b8;margin-bottom:8px;">${item.city ?? ''}</div>
-          <a href="/items/${item._id}" style="font-size:11px;color:#8b5cf6;font-weight:600;">Voir le détail →</a>
+          <div style="font-weight:600;font-size:13px;color:#0f172a;margin-bottom:4px;line-height:1.35;">${item.title}</div>
+          <div style="font-size:11px;color:#64748b;margin-bottom:8px;">${item.city ?? ''}</div>
+          <a href="/items/${item._id}" style="font-size:11px;color:#0284c7;font-weight:600;text-decoration:none;">Voir le détail &rarr;</a>
         </div>
       `);
       marker.addTo(markerLayerRef.current);

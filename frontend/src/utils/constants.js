@@ -1,33 +1,104 @@
+import React from 'react';
+import {
+  Smartphone,
+  Luggage,
+  Shirt,
+  Watch,
+  FileText,
+  Key,
+  Glasses,
+  Wallet,
+  Trophy,
+  Gamepad2,
+  BookOpen,
+  PawPrint,
+  Car,
+  Wrench,
+  Package,
+  Shield,
+  ShieldCheck,
+  Award,
+  Crown,
+} from 'lucide-react';
+
+export const CATEGORY_ICONS = {
+  electronics: Smartphone,
+  bags: Luggage,
+  clothing: Shirt,
+  jewelry: Watch,
+  documents: FileText,
+  keys: Key,
+  glasses: Glasses,
+  wallet: Wallet,
+  sports: Trophy,
+  toys: Gamepad2,
+  books: BookOpen,
+  animals: PawPrint,
+  vehicles: Car,
+  tools: Wrench,
+  other: Package,
+};
+
 export const CATEGORIES = [
-  { value: 'electronics', label: 'Électronique', icon: '📱' },
-  { value: 'bags', label: 'Sacs & Bagages', icon: '👜' },
-  { value: 'clothing', label: 'Vêtements', icon: '👕' },
-  { value: 'jewelry', label: 'Bijoux & Montres', icon: '💍' },
-  { value: 'documents', label: 'Documents & Cartes', icon: '📄' },
-  { value: 'keys', label: 'Clés', icon: '🔑' },
-  { value: 'glasses', label: 'Lunettes', icon: '👓' },
-  { value: 'wallet', label: 'Portefeuille', icon: '👛' },
-  { value: 'sports', label: 'Sport & Loisirs', icon: '⚽' },
-  { value: 'toys', label: 'Jouets & Enfants', icon: '🧸' },
-  { value: 'books', label: 'Livres & Papeterie', icon: '📚' },
-  { value: 'animals', label: 'Animaux', icon: '🐾' },
-  { value: 'vehicles', label: 'Véhicules & Accessoires', icon: '🚗' },
-  { value: 'tools', label: 'Outils', icon: '🔧' },
-  { value: 'other', label: 'Autre', icon: '📦' },
+  { value: 'electronics', label: 'Électronique', Icon: Smartphone },
+  { value: 'bags', label: 'Sacs & Bagages', Icon: Luggage },
+  { value: 'clothing', label: 'Vêtements', Icon: Shirt },
+  { value: 'jewelry', label: 'Bijoux & Montres', Icon: Watch },
+  { value: 'documents', label: 'Documents & Cartes', Icon: FileText },
+  { value: 'keys', label: 'Clés', Icon: Key },
+  { value: 'glasses', label: 'Lunettes', Icon: Glasses },
+  { value: 'wallet', label: 'Portefeuille', Icon: Wallet },
+  { value: 'sports', label: 'Sport & Loisirs', Icon: Trophy },
+  { value: 'toys', label: 'Jouets & Enfants', Icon: Gamepad2 },
+  { value: 'books', label: 'Livres & Papeterie', Icon: BookOpen },
+  { value: 'animals', label: 'Animaux', Icon: PawPrint },
+  { value: 'vehicles', label: 'Véhicules & Accessoires', Icon: Car },
+  { value: 'tools', label: 'Outils', Icon: Wrench },
+  { value: 'other', label: 'Autre', Icon: Package },
 ];
 
 export const BADGE_CONFIG = {
-  basic: { label: 'Basique', color: 'text-slate-400', bg: 'bg-slate-500/20', border: 'border-slate-500/30', icon: '⭐' },
-  verified: { label: 'Vérifié', color: 'text-blue-400', bg: 'bg-blue-500/20', border: 'border-blue-500/30', icon: '✅' },
-  silver: { label: 'Silver', color: 'text-slate-300', bg: 'bg-slate-400/20', border: 'border-slate-400/30', icon: '🥈' },
-  gold: { label: 'Gold', color: 'text-yellow-400', bg: 'bg-yellow-500/20', border: 'border-yellow-500/30', icon: '🥇' },
+  basic: {
+    label: 'Basique',
+    color: 'text-slate-400',
+    bg: 'bg-slate-500/10',
+    border: 'border-slate-500/20',
+    Icon: Shield,
+    icon: React.createElement(Shield, { size: 13 }),
+  },
+  verified: {
+    label: 'Vérifié',
+    color: 'text-sky-300',
+    bg: 'bg-sky-500/10',
+    border: 'border-sky-500/20',
+    Icon: ShieldCheck,
+    icon: React.createElement(ShieldCheck, { size: 13 }),
+  },
+  silver: {
+    label: 'Silver',
+    color: 'text-slate-300',
+    bg: 'bg-slate-400/10',
+    border: 'border-slate-400/20',
+    Icon: Award,
+    icon: React.createElement(Award, { size: 13 }),
+  },
+  gold: {
+    label: 'Gold',
+    color: 'text-amber-300',
+    bg: 'bg-amber-500/10',
+    border: 'border-amber-500/20',
+    Icon: Crown,
+    icon: React.createElement(Crown, { size: 13 }),
+  },
 };
 
 export const getCategoryLabel = (value) =>
   CATEGORIES.find((c) => c.value === value)?.label ?? value;
 
-export const getCategoryIcon = (value) =>
-  CATEGORIES.find((c) => c.value === value)?.icon ?? '📦';
+export const getCategoryIcon = (value, props = { size: 20 }) => {
+  const IconComp = CATEGORY_ICONS[value] || Package;
+  return React.createElement(IconComp, props);
+};
 
 export const formatDate = (date) => {
   if (!date) return '';

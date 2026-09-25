@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, SlidersHorizontal, MapPin, Plus } from 'lucide-react';
+import { Search, SlidersHorizontal, MapPin, Plus, Sparkles, CheckCircle2, Package, Users, Inbox } from 'lucide-react';
 import { motion } from 'framer-motion';
 import MapView from '../components/Map/MapView';
 import ItemCard from '../components/Items/ItemCard';
@@ -51,10 +51,10 @@ export default function Home() {
   return (
     <div className="flex-1 pb-20 md:pb-0">
       {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-primary-950/30 to-slate-950 border-b border-slate-800 px-4 py-16 md:py-24">
-        {/* Background blobs */}
-        <div className="absolute -top-24 -left-24 w-96 h-96 bg-primary-600/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-violet-600/10 rounded-full blur-3xl pointer-events-none" />
+      <section className="relative overflow-hidden bg-gradient-to-b from-[#0B101D] via-[#06080E] to-[#06080E] border-b border-slate-800/80 px-4 py-16 md:py-24">
+        {/* Background ambient glows (Sunset flame & Petrol cyber waves) */}
+        <div className="absolute -top-32 -left-24 w-[32rem] h-[32rem] bg-primary-500/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-32 -right-24 w-[32rem] h-[32rem] bg-sky-500/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative max-w-3xl mx-auto text-center">
           <motion.div
@@ -62,8 +62,9 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <div className="inline-flex items-center gap-2 bg-primary-500/10 border border-primary-500/20 text-primary-400 text-xs font-semibold px-4 py-2 rounded-full mb-6">
-              🔍 Plateforme de signalement en temps réel
+            <div className="inline-flex items-center gap-2 bg-primary-500/10 border border-primary-500/20 text-primary-300 text-xs font-semibold px-3.5 py-1.5 rounded-full mb-6">
+              <Sparkles size={14} className="text-primary-400" />
+              <span>Plateforme de signalement en temps réel</span>
             </div>
             <h1 className="text-4xl md:text-5xl font-extrabold text-slate-100 leading-tight mb-4">
               Vous avez <span className="gradient-text">perdu</span> quelque chose ?<br />
@@ -97,22 +98,23 @@ export default function Home() {
           </motion.form>
 
           {/* Type filter pills */}
-          <div className="flex justify-center gap-3 mt-4">
+          <div className="flex justify-center gap-2.5 mt-5">
             {[
               { value: '', label: 'Tous' },
-              { value: 'lost', label: '🔴 Perdus' },
-              { value: 'found', label: '🟢 Trouvés' },
-            ].map(({ value, label }) => (
+              { value: 'lost', label: 'Perdus', icon: Search },
+              { value: 'found', label: 'Trouvés', icon: CheckCircle2 },
+            ].map(({ value, label, icon: Icon }) => (
               <button
                 key={value}
                 onClick={() => { setTypeFilter(value); setLoading(true); fetchItems(); }}
-                className={`text-sm px-4 py-1.5 rounded-full font-medium transition-all ${
+                className={`text-xs sm:text-sm px-4 py-2 rounded-xl font-medium transition-all inline-flex items-center gap-1.5 ${
                   typeFilter === value
-                    ? 'bg-primary-600 text-white'
-                    : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                    ? 'bg-primary-600 text-white shadow-sm'
+                    : 'bg-slate-900/90 text-slate-400 hover:text-slate-200 border border-slate-800 hover:border-slate-700'
                 }`}
               >
-                {label}
+                {Icon && <Icon size={13} />}
+                <span>{label}</span>
               </button>
             ))}
           </div>
@@ -128,14 +130,16 @@ export default function Home() {
           className="grid grid-cols-3 gap-4"
         >
           {[
-            { label: 'Objets signalés', value: '2 400+', icon: '📦' },
-            { label: 'Retrouvés', value: '850+', icon: '✅' },
-            { label: 'Utilisateurs actifs', value: '1 200+', icon: '👥' },
-          ].map(({ label, value, icon }) => (
+            { label: 'Objets signalés', value: '2 400+', Icon: Package, color: 'text-primary-400', bg: 'bg-primary-500/10' },
+            { label: 'Retrouvés', value: '850+', Icon: CheckCircle2, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
+            { label: 'Utilisateurs actifs', value: '1 200+', Icon: Users, color: 'text-sky-400', bg: 'bg-sky-500/10' },
+          ].map(({ label, value, Icon, color, bg }) => (
             <div key={label} className="glass-card text-center p-5">
-              <div className="text-3xl mb-2">{icon}</div>
-              <div className="text-2xl font-bold gradient-text">{value}</div>
-              <div className="text-xs text-slate-500 mt-1">{label}</div>
+              <div className={`w-10 h-10 rounded-xl ${bg} ${color} flex items-center justify-center mx-auto mb-3 border border-white/5`}>
+                <Icon size={20} />
+              </div>
+              <div className="text-2xl font-bold text-slate-100">{value}</div>
+              <div className="text-xs text-slate-400 mt-1">{label}</div>
             </div>
           ))}
         </motion.div>
@@ -170,8 +174,10 @@ export default function Home() {
             </div>
           ) : (
             <div className="text-center py-16 text-slate-500">
-              <div className="text-5xl mb-4">📭</div>
-              <p>Aucun signalement pour le moment</p>
+              <div className="w-14 h-14 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center mx-auto mb-3 text-slate-500">
+                <Inbox size={26} />
+              </div>
+              <p className="text-slate-400 font-medium">Aucun signalement pour le moment</p>
             </div>
           )}
         </section>

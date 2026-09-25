@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Upload, X, MapPin, Loader2, Check } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Upload, X, MapPin, Loader2, Check, Search, CheckCircle2 } from 'lucide-react';
 import MapView from '../components/Map/MapView';
 import api from '../services/api';
 import { CATEGORIES } from '../utils/constants';
@@ -91,7 +91,7 @@ export default function ReportItem() {
       form.photos.forEach((photo) => fd.append('photos', photo));
 
       const { data } = await api.post('/items', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
-      toast.success('Signalement créé ! 🎉');
+      toast.success('Signalement créé avec succès !');
       navigate(`/items/${data.item._id}`);
     } catch (err) {
       toast.error(err.response?.data?.message ?? 'Erreur lors de la création');
@@ -132,16 +132,19 @@ export default function ReportItem() {
             <div>
               <label className="input-label">Type de signalement</label>
               <div className="flex gap-3">
-                {[{ v: 'lost', label: '🔴 J\'ai perdu', cls: 'badge-lost' },
-                  { v: 'found', label: '🟢 J\'ai trouvé', cls: 'badge-found' }].map(({ v, label }) => (
+                {[
+                  { v: 'lost', label: "J'ai perdu", icon: Search, activeClass: 'bg-amber-500/10 border-amber-500/50 text-amber-300' },
+                  { v: 'found', label: "J'ai trouvé", icon: CheckCircle2, activeClass: 'bg-emerald-500/10 border-emerald-500/50 text-emerald-300' },
+                ].map(({ v, label, icon: Icon, activeClass }) => (
                   <button key={v} type="button" onClick={() => setField('type', v)}
-                    className={`flex-1 py-3 rounded-xl text-sm font-semibold border-2 transition-all ${
+                    className={`flex-1 py-3 rounded-xl text-sm font-semibold border-2 transition-all flex items-center justify-center gap-2 ${
                       form.type === v
-                        ? v === 'lost' ? 'bg-orange-500/20 border-orange-500/60 text-orange-400' : 'bg-emerald-500/20 border-emerald-500/60 text-emerald-400'
-                        : 'bg-slate-800 border-slate-700 text-slate-400 hover:border-slate-600'
+                        ? activeClass
+                        : 'bg-slate-900/80 border-slate-800 text-slate-400 hover:border-slate-700'
                     }`}
                   >
-                    {label}
+                    <Icon size={16} />
+                    <span>{label}</span>
                   </button>
                 ))}
               </div>
@@ -151,18 +154,24 @@ export default function ReportItem() {
             <div>
               <label className="input-label">Catégorie *</label>
               <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
-                {CATEGORIES.map((c) => (
-                  <button key={c.value} type="button" onClick={() => setField('category', c.value)}
-                    className={`flex flex-col items-center gap-1 p-2 rounded-xl text-xs font-medium border transition-all ${
-                      form.category === c.value
-                        ? 'bg-primary-600/20 border-primary-500/60 text-primary-400'
-                        : 'bg-slate-800 border-slate-700 text-slate-400 hover:border-slate-600'
-                    }`}
-                  >
-                    <span className="text-xl">{c.icon}</span>
-                    <span className="line-clamp-1">{c.label}</span>
-                  </button>
-                ))}
+                {CATEGORIES.map((c) => {
+                  const IconComp = c.Icon;
+                  const isSelected = form.category === c.value;
+                  return (
+                    <button key={c.value} type="button" onClick={() => setField('category', c.value)}
+                      className={`flex flex-col items-center gap-1.5 p-2.5 rounded-xl text-xs font-medium border transition-all ${
+                        isSelected
+                          ? 'bg-primary-500/15 border-primary-500/60 text-primary-300 shadow-sm'
+                          : 'bg-slate-900/80 border-slate-800 text-slate-400 hover:border-slate-700 hover:text-slate-200'
+                      }`}
+                    >
+                      <span className="p-1 rounded-lg">
+                        {IconComp ? <IconComp size={18} /> : null}
+                      </span>
+                      <span className="line-clamp-1 text-[11px]">{c.label}</span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 

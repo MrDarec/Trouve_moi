@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Lock, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Lock, Eye, EyeOff, Loader2, Key } from 'lucide-react';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
 import { motion } from 'framer-motion';
@@ -31,7 +31,9 @@ export default function ResetPassword() {
     <div className="min-h-[calc(100svh-4rem)] flex items-center justify-center p-4">
       <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} className="glass-card w-full max-w-md p-8">
         <div className="text-center mb-8">
-          <div className="text-4xl mb-3">🔑</div>
+          <div className="w-12 h-12 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center mx-auto mb-4 text-primary-400">
+            <Key size={22} />
+          </div>
           <h1 className="text-2xl font-bold text-slate-100">Nouveau mot de passe</h1>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
