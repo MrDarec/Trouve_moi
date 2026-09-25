@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\MatchAccepted;
 use App\Models\ItemMatch;
 use App\Models\Notification;
 use App\Models\User;
@@ -93,6 +94,10 @@ class MatchController extends Controller
                 'message' => 'Le match a été accepté par les deux parties. Le chat est maintenant débloqué.',
                 'data' => ['match_id' => $match->id],
             ]);
+
+            // 🔴 Broadcast temps réel
+            broadcast(new MatchAccepted($match, $match->user_lost_id));
+            broadcast(new MatchAccepted($match, $match->user_found_id));
         }
 
         $match->save();

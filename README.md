@@ -78,7 +78,7 @@ trouve-moi/
 - ✅ Score minimum 30% requis
 - ✅ Rayon maximum 100 km
 - ✅ Notification in-app créée lors d'un match
-- ⏳ Notification instantanée temps réel (Laravel Broadcasting non configuré)
+- ✅ Notification instantanée temps réel (Laravel Reverb WebSocket)
 
 ### Messagerie
 - ✅ Chat temps réel via Socket.io

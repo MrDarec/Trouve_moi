@@ -5,7 +5,12 @@ use App\Http\Controllers\ItemController;
 use App\Http\Controllers\MatchController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
+
+// ===================== BROADCASTING AUTH (Reverb private channels) =====================
+// Must be within Sanctum auth so the Bearer token is validated
+Broadcast::routes(['middleware' => ['auth:sanctum']]);
 
 // ===================== AUTH ROUTES (PUBLIC) =====================
 Route::post('/auth/register', [AuthController::class, 'register']);

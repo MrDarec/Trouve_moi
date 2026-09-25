@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Events\NewMatchFound;
 use App\Models\Item;
 use App\Models\ItemMatch;
 use App\Models\Notification;
@@ -169,6 +170,9 @@ class MatchingService
 
                 $matches[] = $match;
 
+                // Load relations for the broadcast payload
+                $match->load(['itemLost', 'itemFound']);
+
                 // Create in-app notifications
                 Notification::create([
                     'user_id' => $lostItem->user_id,
@@ -186,7 +190,9 @@ class MatchingService
                     'data' => ['match_id' => $match->id, 'score' => $score['total']],
                 ]);
 
-                // Emit event triggers can be done here using Laravel events if broadcasting is set up
+                // 🔴 Broadcast temps réel via Laravel Reverb
+                broadcast(new NewMatchFound($match, $lostItem->user_id));
+                broadcast(new NewMatchFound($match, $foundItem->user_id));
             }
         }
 

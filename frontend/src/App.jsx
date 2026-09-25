@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import { SocketProvider } from './context/SocketContext';
+import { EchoProvider } from './context/EchoContext';
 import Navbar from './components/Layout/Navbar';
 import Home from './pages/Home';
 import Items from './pages/Items';
@@ -68,7 +68,7 @@ function AppLayout() {
 export default function App() {
   return (
     <AuthProvider>
-      <SocketProvider>
+      <EchoProvider>
         <BrowserRouter>
           <Routes>
             <Route element={<AppLayout />}>
@@ -111,7 +111,7 @@ export default function App() {
             }}
           />
         </BrowserRouter>
-      </SocketProvider>
+      </EchoProvider>
     </AuthProvider>
   );
 }
